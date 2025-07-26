@@ -1,0 +1,59 @@
+/* main.css */
+
+/* Interフォントを全体に適用 */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* カスタムスクロールバーのスタイル */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    cursor: pointer; /* ホバー時にカーソルを変更 */
+}
+
+/* ボタンの基本的なスタイル */
+.btn-primary {
+    background-color: #2563eb; /* blue-600 */
+    color: #ffffff; /* white */
+    font-weight: bold;
+    padding-top: 0.75rem; /* py-3 */
+    padding-bottom: 0.75rem; /* py-3 */
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+    transition: background-color 0.3s ease-in-out;
+}
+.btn-primary:hover {
+    background-color: #1d4ed8; /* blue-700 */
+}
+
+/* ローディングスピナーのスタイル */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #3b82f6; /* Tailwind blue-500 */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* コードブロックのスタイル調整 */
+pre {
+    white-space: pre-wrap; /* 長いコードが折り返されるようにする */
+    word-wrap: break-word; /* 単語の途中で改行されるようにする */
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript 非同期処理の解説</title>
+    <!-- Tailwind CSS CDNを読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Interフォントの読み込み -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- 外部CSSファイルへのリンク -->
+    <link rel="stylesheet" href="main.css">
+</head>
+<body class="bg-gray-50 text-gray-800 leading-relaxed">
+    <div class="min-h-screen flex flex-col">
+        <!-- ヘッダーセクション -->
+        <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg py-6 md:py-8">
+            <div class="container mx-auto px-4 text-center">
+                <!-- JavaScriptロゴをページのトップに配置 -->
+                <img src="JavaScript-logo (1).png" alt="JavaScriptロゴ" class="rounded-lg shadow-lg w-24 h-24 md:w-32 md:h-32 mx-auto mb-4" onerror="this.onerror=null;this.src='https://placehold.co/100x100/E0F2F7/2A659F?text=JS';">
+                <h1 class="text-3xl md:text-5xl font-extrabold mb-2">JavaScript 非同期処理の解説</h1>
+                <p class="text-lg md:text-xl opacity-90">Promiseとasync/awaitでモダンな非同期処理をマスターする</p>
+            </div>
+        </header>
+
+        <!-- メインコンテンツセクション -->
+        <main class="flex-grow container mx-auto px-4 py-8 md:py-12">
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">はじめに</h2>
+                <p class="mb-4 text-gray-700">
+                    JavaScriptはシングルスレッドで動作しますが、ネットワークリクエストやファイルI/Oなどの時間のかかる処理を効率的に扱うために「非同期処理」の概念が不可欠です。この記事では、JavaScriptにおける非同期処理の進化と、現代のJavaScript開発で中心となるPromiseとasync/awaitについて詳しく解説します。
+                </p>
+                <p class="mb-4 text-gray-700">
+                    非同期処理を理解し、適切に利用することで、ユーザーインターフェースのフリーズを防ぎ、より応答性の高いウェブアプリケーションを構築できます。
+                </p>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">非同期処理の基本：コールバック関数</h2>
+                <p class="mb-4 text-gray-700">
+                    非同期処理の初期には、コールバック関数が広く使われていました。コールバック関数は、特定の処理が完了した後に実行される関数です。
+                </p>
+                <div class="bg-gray-100 p-4 rounded-lg text-sm font-mono overflow-x-auto mb-4">
+                    <pre><code>function fetchData(callback) {
+    setTimeout(() => {
+        const data = "データが取得されました";
+        callback(data);
+    }, 2000); // 2秒後に実行
+}
+
+fetchData(function(data) {
+    console.log(data); // "データが取得されました"
+});
+console.log("データ取得中..."); // こちらが先に表示される</code></pre>
+                </div>
+                <p class="mb-4 text-gray-700">
+                    しかし、非同期処理が多層になると「コールバック地獄（Callback Hell）」と呼ばれる、コードの可読性や保守性が著しく低下する問題が発生しました。
+                </p>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">Promiseの導入</h2>
+                <p class="mb-4 text-gray-700">
+                    Promiseは、非同期処理の最終的な完了（または失敗）を表すオブジェクトです。これにより、コールバック地獄を回避し、より構造化されたコードを書くことができます。Promiseには以下の3つの状態があります。
+                </p>
+                <ul class="list-disc list-inside mb-4 text-gray-700">
+                    <li class="mb-1"><strong class="text-blue-600">Pending (保留中):</strong> 初期状態。成功も失敗もしていない。</li>
+                    <li class="mb-1"><strong class="text-blue-600">Fulfilled (成功):</strong> 処理が成功し、結果が利用可能になった状態。</li>
+                    <li class="mb-1"><strong class="text-blue-600">Rejected (失敗):</b> 処理が失敗し、エラーが発生した状態。</li>
+                </ul>
+                <p class="mb-4 text-gray-700">
+                    Promiseは<code>.then()</code>メソッドで成功時の処理を、<code>.catch()</code>メソッドで失敗時の処理を記述します。
+                </p>
+                <div class="bg-gray-100 p-4 rounded-lg text-sm font-mono overflow-x-auto mb-4">
+                    <pre><code>function fetchDataWithPromise() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const success = true; // 成功/失敗をシミュレート
+            if (success) {
+                resolve("Promiseでデータが取得されました！");
+            } else {
+                reject("Promiseでのデータ取得に失敗しました。");
+            }
+        }, 2000);
+    });
+}
+
+fetchDataWithPromise()
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error(error);
+    });</code></pre>
+                </div>
+                <p class="mb-4 text-gray-700">
+                    複数のPromiseを連結して処理を行う「Promiseチェーン」も可能です。
+                </p>
+                <!-- Promiseフローの画像を削除 -->
+                <div class="flex flex-col md:flex-row gap-8 mb-8 items-center">
+                    <div class="text-gray-700 w-full">
+                        <p>
+                            Promiseは、非同期処理の状態を明確にし、エラーハンドリングを一元化することで、コードをより整理されたものにします。特に、複数の非同期処理を順次実行する場合にその真価を発揮します。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">async/awaitで非同期処理を同期的に書く</h2>
+                <p class="mb-4 text-gray-700">
+                    ES2017で導入された<code>async/await</code>は、Promiseをさらに扱いやすくするための構文です。これにより、非同期処理をあたかも同期処理であるかのように記述でき、可読性が大幅に向上します。
+                </p>
+                <ul class="list-disc list-inside mb-4 text-gray-700">
+                    <li class="mb-1"><strong class="text-blue-600"><code>async</code>キーワード:</strong> 関数が非同期であることを宣言します。<code>async</code>関数は常にPromiseを返します。</li>
+                    <li class="mb-1"><strong class="text-blue-600"><code>await</code>キーワード:</strong> Promiseの解決（または拒否）を待機します。<code>await</code>は<code>async</code>関数内でしか使用できません。</li>
+                </ul>
+                <div class="bg-gray-100 p-4 rounded-lg text-sm font-mono overflow-x-auto mb-4">
+                    <pre><code>async function fetchAndProcessData() {
+    try {
+        console.log("データ取得を開始します...");
+        const data = await fetchDataWithPromise(); // Promiseの解決を待つ
+        console.log("成功:", data);
+
+        // 別の非同期処理を続けることも可能
+        const processedData = await new Promise(resolve => {
+            setTimeout(() => resolve(data + " (処理済み)"), 1000);
+        });
+        console.log("処理済みデータ:", processedData);
+
+    } catch (error) {
+        console.error("エラー:", error);
+    }
+}
+
+fetchAndProcessData();</code></pre>
+                </div>
+                <p class="mb-4 text-gray-700">
+                    <code>async/await</code>を使用することで、エラーハンドリングも<code>try...catch</code>ブロックで同期処理と同じように行えるため、非常に直感的です。
+                </p>
+                <div class="flex flex-col md:flex-row-reverse gap-8 mb-8 items-center">
+                    <img src="asyncawait003-768x432.png" alt="async/awaitのコード例を示す図" class="rounded-lg shadow-md w-full md:w-1/2 h-auto object-cover">
+                    <div class="text-gray-700 w-full md:w-1/2">
+                        <p>
+                            この構文は、特に複数の非同期操作が絡む複雑なロジックにおいて、コードの読みやすさと保守性を劇的に向上させます。現代のJavaScript開発では、<code>async/await</code>が非同期処理のデファクトスタンダードとなっています。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 新しいDOM操作のチュートリアルセクション -->
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">JavaScript体験：DOM操作の基本</h2>
+                <p class="mb-4 text-gray-700">
+                    JavaScriptは、HTMLドキュメントの構造、スタイル、内容を変更するためにDOM (Document Object Model) を操作します。以下のボタンをクリックして、テキストがどのように変化するか見てみましょう。
+                </p>
+                <div class="flex flex-col items-center justify-center gap-4">
+                    <button id="changeTextButton" class="btn-primary">
+                        テキストを変更
+                    </button>
+                    <p id="domTextOutput" class="bg-gray-100 p-4 rounded-lg w-full text-center text-gray-700 min-h-[80px] flex items-center justify-center">
+                        ここに表示されているテキストが変更されます。
+                    </p>
+                </div>
+            </section>
+
+            <!-- 非同期データ取得シミュレーションセクション -->
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">JavaScript体験：非同期データ取得シミュレーション</h2>
+                <p class="mb-4 text-gray-700">
+                    以下のボタンをクリックして、非同期処理によるデータ取得を体験してみましょう。データ取得には数秒かかりますが、ページはフリーズしません。
+                </p>
+                <div class="flex flex-col items-center justify-center gap-4">
+                    <button id="fetchDataButton" class="btn-primary flex items-center justify-center">
+                        <span id="buttonText">データ取得を開始</span>
+                        <div id="loadingSpinner" class="spinner ml-2 hidden"></div>
+                    </button>
+                    <div id="dataOutput" class="bg-gray-100 p-4 rounded-lg w-full text-center text-gray-700 min-h-[80px] flex items-center justify-center">
+                        ここにデータが表示されます。
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4 border-b-2 border-blue-200 pb-2">まとめと参考資料</h2>
+                <p class="mb-4 text-gray-700">
+                    JavaScriptの非同期処理は、ウェブアプリケーションの応答性とパフォーマンスを向上させる上で非常に重要です。コールバックからPromise、そしてasync/awaitへと進化してきたことで、より簡潔で読みやすいコードが書けるようになりました。
+                </p>
+                <p class="mb-4 text-gray-700">
+                    非同期処理をマスターし、モダンなJavaScript開発を楽しみましょう。
+                </p>
+                <h3 class="text-xl md:text-2xl font-semibold text-blue-600 mb-3">参考資料:</h3>
+                <ul class="list-disc list-inside text-gray-700">
+                    <li class="mb-1"><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" class="text-blue-500 hover:underline">MDN Web Docs: Promise</a></li>
+                    <li class="mb-1"><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Statements/async_function" target="_blank" class="text-blue-500 hover:underline">MDN Web Docs: async function</a></li>
+                </ul>
+            </section>
+        </main>
+
+        <!-- フッターセクション -->
+        <footer class="bg-gray-800 text-white py-6 mt-auto">
+            <div class="container mx-auto px-4 text-center text-sm md:text-base">
+                <p>&copy; 2025 知能情報コース. All rights reserved.</p>
+                <p class="mt-2">本コンテンツの作成時間（HTML/CSS/JavaScriptの設計・実装を含む）：約6時間</p>
+                <!-- 更新された完成日と総製作時間 -->
+                <p class="mt-1">完成日: 2025年7月25日(金)</p>
+                <p class="mt-1">総製作時間: 500分</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 外部JavaScriptファイルへのリンク -->
+    <script src="script.js"></script>
+</body>
+</html>
